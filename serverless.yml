@@ -1,4 +1,4 @@
-service: my-store-app
+service: react-redux-cloudfront
 
 frameworkVersion: "3"
 
@@ -10,7 +10,7 @@ provider:
 
 plugins:
   - serverless-finch
-  # 'serverless-single-page-app-plugin' is a custom plugin that located serverless_plugins folder.
+  # 'serverless-single-page-app-plugin' is a custom plugin that located .serverless_plugins folder.
   # Existing plugin (https://www.npmjs.com/package/serverless-single-page-app-plugin) doesn't have invalidate cache feature that often used during CI/CD events.
   # How to build your own plugins: https://www.serverless.com/framework/docs/providers/aws/guide/plugins#service-local-plugin
   - serverless-single-page-app-plugin
@@ -18,16 +18,16 @@ plugins:
 
 custom:
   client:
-    bucketName: react-app-s3-cloudfront-a-r
+    bucketName: andrei-bucket-name
     distributionFolder: dist
     indexDocument: index.html
 
   ## Serverless-single-page-app-plugin configuration:
-  s3LocalPath: ${self:custom.client.distributionFolder}/
+  s3LocalPath: dist
   s3BucketName: ${self:custom.client.bucketName}
   serverless-s3-cleaner:
-      buckets:
-        - ${self:custom.client.bucketName}
+    buckets:
+      - ${self:custom.client.bucketName}
 
 resources:
   Resources:
@@ -43,13 +43,6 @@ resources:
         # VersioningConfiguration:
         #   Status: Enabled
 
-
-    OriginAccessIdentity:
-      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-      Properties:
-        CloudFrontOriginAccessIdentityConfig:
-          Comment: Access identity between CloudFront and S3 bucket
-
     ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
     WebAppS3BucketPolicy:
       Type: AWS::S3::BucketPolicy
@@ -58,16 +51,22 @@ resources:
           Ref: WebAppS3Bucket
         PolicyDocument:
           Statement:
-            - Sid: 'AllowCloudFrontAccessIdentity'
+            - Sid: "AllowCloudFrontAccessIdentity"
               Effect: Allow
               Action: s3:GetObject
               Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
               Principal:
                 AWS:
                   Fn::Join:
-                    - ' '
-                    - - 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity'
+                    - " "
+                    - - "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity"
                       - !Ref OriginAccessIdentity
+
+    OriginAccessIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: Access identity between CloudFront and S3 bucket
 
     ## Specifying the CloudFront Distribution to server your Web Application
     WebAppCloudFrontDistribution:
@@ -77,7 +76,7 @@ resources:
           Origins:
             - DomainName: !GetAtt WebAppS3Bucket.RegionalDomainName
               ## An identifier for the origin which must be unique within the distribution
-              Id: a-r-react-app-s3-cloudfront
+              Id: myS3Origin
               ## In case you don't want to restrict the bucket access use CustomOriginConfig and remove S3OriginConfig
               S3OriginConfig:
                 OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${OriginAccessIdentity}

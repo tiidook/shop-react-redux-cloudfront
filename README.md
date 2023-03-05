@@ -58,5 +58,7 @@ Display cloudfront domain information in console.
 
 Remove an entire stack configured in `serverless.yml` via CloudFormation.
 
-S3 URL: https://react-app-s3-cloudfront-a-r.s3.amazonaws.com/
-CloudFront distribution domain name: d33t30vomc55fl.cloudfront.net
+S3 URL: https://andrei-bucket-name.s3.amazonaws.com
+CloudFront distribution domain name: https://dw0vsrj63fb78.cloudfront.net/
+
+Added root path to api gateway: https://rd0rvs6891.execute-api.us-east-1.amazonaws.com/dev
