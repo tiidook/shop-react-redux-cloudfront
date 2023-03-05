@@ -6,4 +6,8 @@ const API_PATHS = {
   cart: "https://.execute-api.eu-west-1.amazonaws.com/dev",
 };
 
+export const PRODUCTS_API_PATH = {
+  path: "https://fwvb05w0hc.execute-api.us-east-1.amazonaws.com/dev"
+}
+
 export default API_PATHS;

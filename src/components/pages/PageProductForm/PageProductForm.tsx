@@ -32,6 +32,7 @@ export default function PageProductForm() {
       : formattedValues;
     return upsertAvailableProduct(productToSave, {
       onSuccess: () => {
+        console.log('SUCCESS')
         invalidateAvailableProducts();
         removeProductCache(id);
         navigate("/admin/products");
